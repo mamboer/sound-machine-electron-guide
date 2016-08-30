@@ -35,3 +35,37 @@ const settingsEl = document.querySelector('.settings');
 settingsEl.addEventListener('click', function () {
     ipcRenderer.send('open-settings-window');
 });
+
+const {remote} = require('electron');
+const {Tray, Menu} = remote;
+const path = require('path');
+
+let trayIcon = null;
+
+if (process.platform === 'darwin') {
+    trayIcon = new Tray(path.join(__dirname, 'img/tray-iconTemplate.png'));
+}
+else {
+    trayIcon = new Tray(path.join(__dirname, 'img/tray-icon-alt.png'));
+}
+
+let trayMenuTemplate = [
+    {
+        label: 'Sound machine',
+        enabled: false
+    },
+    {
+        label: 'Settings',
+        click: function () {
+            ipcRenderer.send('open-settings-window');
+        }
+    },
+    {
+        label: 'Quit',
+        click: function () {
+            ipcRenderer.send('close-main-window');
+        }
+    }
+];
+let trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
+trayIcon.setContextMenu(trayMenu);
