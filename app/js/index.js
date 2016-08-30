@@ -25,3 +25,8 @@ const closeEl = document.querySelector('.close');
 closeEl.addEventListener('click', function () {
     ipcRenderer.send('close-main-window');
 });
+
+ipcRenderer.on('global-shortcut', function(evt, arg) {
+    let event = new MouseEvent('click');
+    soundButtons[arg].dispatchEvent(event);
+});
