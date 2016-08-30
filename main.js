@@ -35,3 +35,31 @@ app.on('will-quit', () => {
 });
 
 ipcMain.on('close-main-window', () => app.quit());
+
+
+let settingsWindow = null;
+
+ipcMain.on('open-settings-window', () => {
+    if (settingsWindow) {
+        return;
+    }
+
+    settingsWindow = new BrowserWindow({
+        frame: false,
+        height: 200,
+        resizable: false,
+        width: 200
+    });
+
+    settingsWindow.loadURL('file://' + __dirname + '/app/settings.html');
+
+    settingsWindow.on('closed', () => {
+        settingsWindow = null;
+    });
+});
+
+ipcMain.on('close-settings-window', () => {
+    if (settingsWindow) {
+        settingsWindow.close();
+    }
+});
