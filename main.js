@@ -7,10 +7,24 @@ const {
     ipcMain
 } = require('electron');
 
+const configuration = require('./configuration');
 
 let mainWindow = null;
 
 app.on('ready', () => {
+
+    if (!configuration.get('shortcutKeys')) {
+        configuration.set('shortcutKeys', ['CommandOrControl', 'Shift'], (err) => {
+            bootup();
+        });
+        return;
+    }
+
+    bootup();
+
+});
+
+function bootup() {
     mainWindow = new BrowserWindow({
         frame: false,
         height: 700,
@@ -20,15 +34,22 @@ app.on('ready', () => {
 
     mainWindow.loadURL('file://' + __dirname + '/app/index.html');
 
-    globalShortcut.register('CommandOrControl+Shift+1', () => {
+    setGlobalShortcuts();
+}
+
+function setGlobalShortcuts() {
+    globalShortcut.unregisterAll();
+
+    let shortcutKeysSetting = configuration.get('shortcutKeys');
+    let shortcutPrefix = shortcutKeysSetting.length === 0 ? '' : shortcutKeysSetting.join('+') + '+';
+
+    globalShortcut.register(shortcutPrefix + '1', function () {
         mainWindow.webContents.send('global-shortcut', 0);
     });
-
-    globalShortcut.register('CommandOrControl+Shift+2', () => {
+    globalShortcut.register(shortcutPrefix + '2', function () {
         mainWindow.webContents.send('global-shortcut', 1);
     });
-
-});
+}
 
 app.on('will-quit', () => {
     globalShortcut.unregisterAll();
@@ -46,7 +67,7 @@ ipcMain.on('open-settings-window', () => {
 
     settingsWindow = new BrowserWindow({
         frame: false,
-        height: 200,
+        height: 220,
         resizable: false,
         width: 200
     });
@@ -62,4 +83,8 @@ ipcMain.on('close-settings-window', () => {
     if (settingsWindow) {
         settingsWindow.close();
     }
+});
+
+ipcMain.on('set-global-shortcuts', function () {
+    setGlobalShortcuts();
 });
