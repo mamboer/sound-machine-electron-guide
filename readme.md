@@ -1,3 +1,3 @@
 # Accompanying repository for the Electron guide
 
-![Sound Machine](https://rawgithub.com/bojzi/sound-machine/master/sketch/sound-machine.png)
+![Sound Machine](https://rawgit.com/mamboer/sound-machine-electron-guide/master/cover.png)
